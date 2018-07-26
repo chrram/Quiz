@@ -1,2 +1,2 @@
 # Quiz
-JQuery Mobile Quiz Appp
+JQuery Mobile Quiz App
