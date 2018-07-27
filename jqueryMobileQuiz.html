@@ -17,23 +17,22 @@
 			<div data-role = "main" class = "ui-content">
 				<form>
 
-					<label for = "radio1">
-						<input type = "radio" name = "radio-choice-0" id = "radio1"> Easy </input>
-					</label>
-					   
-					<label for = "radio2">
-						<input type = "radio" name = "radio-choice-0" id = "radio2"> Medium </input>
-					</label>
-					   
-					<label for = "radio3">
-						<input type = "radio" name = "radio-choice-0" id = "radio3"> Hard </input>
-					</label>
-						
+				<fieldset data-role = "controlgroup">
+					<input type = "radio" id = "radio1" name = "radio-choice-0" />
+					<label for = "radio1">Easy</label>
+
+					<input type = "radio" id = "radio2" name = "radio-choice-0" />
+					<label for = "radio2">Medium</label>
+
+					<input type = "radio" id = "radio3" name = "radio-choice-0" />
+					<label for = "radio3">Hard</label>
+				</fieldset>
+				
 					<label for = "slider">Amount of questions</label>
 					<input type = "range" name = "slider" id = "slider" value = "20" min = "1" max = "50" data-highlight = "true">
 							
 				</form>
-				<a href = "#page2" class="ui-btn ui-shadow ui-corner-all" data-transition = "pop">Start!</a>
+				<a class="ui-btn ui-shadow ui-corner-all" id="start" data-transition = "pop">Start!</a>
 			</div>
 			<div data-role = "footer" class = "ui-content">
 				
@@ -42,6 +41,19 @@
 
 		<script>
 		
+			$(document).ready(function() {
+				$("#start").click(function() {
+					alert(getDifficulty());
+					alert($(slider).val())
+				});
+				
+				function getDifficulty(){
+					if ($("#radio1").is(":checked")) return "easy";
+					else if($("#radio2").is(":checked"))return "medium";
+					else if($("#radio3").is(":checked"))return "hard";
+				}
+			});
+			
 		</script>
 	</body>
 </html>
