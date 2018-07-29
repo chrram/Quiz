@@ -46,7 +46,13 @@
 				
 				$("#start").click(function() {
 					var slider = parseInt($("#slider").val())
-					var str =""
+					var str = "";
+					
+					if(!selectedDifficultyCheck()){
+						alert("You have not selected difficulty");
+						return;
+					}
+					
 					for(var i = 1; i <= slider; i++){
 
 							str = str +
@@ -89,27 +95,46 @@
 					else if($("#radio3").is(":checked"))return "hard";
 				}
 				
+				function selectedDifficultyCheck(){
+					if((typeof getDifficulty()) == "string"){
+						return true;
+					}
+					else if((typeof getDifficulty()) != "string")
+					{
+						return false;
+					}
+				}
+				
 				
 			});
 			
 			function nextQuestionPage(currentNumber,lastNumber){
-				if(currentNumber == lastNumber){
-					alert(getAnswersFromQuestion(currentNumber))
-					alert("slut")
-				}
-				else {
-					alert(getAnswersFromQuestion(currentNumber));
-					$.mobile.navigate("#page" + (parseInt(currentNumber) + 1).toString());
+				
+				var selectedAnswer = false;
+				while(!selectedAnswer){
+					if(!isNaN(getAnswersFromQuestion(currentNumber))){
+						selectedAnswer = true;
+						if(currentNumber == lastNumber){
+							alert(getAnswersFromQuestion(currentNumber))
+							alert("slut")
+						}
+						else{
+							$.mobile.navigate("#page" + (currentNumber + 1).toString());
+						}	
+					}
+					else if(isNaN(getAnswersFromQuestion(currentNumber))){
+						alert("You have not selected anything");
+						break;
+					}
 				}
 			}
 			
 			function getAnswersFromQuestion(currentNumber){
-				if ($("#q"+currentNumber+"answer1").is(":checked")) return "1";
-					else if($("#q"+currentNumber+"answer2").is(":checked"))return "2";
-					else if($("#q"+currentNumber+"answer3").is(":checked"))return "3";
-					else if($("#q"+currentNumber+"answer4").is(":checked"))return "4";
+				if ($("#q"+currentNumber+"answer1").is(":checked")) return 1;
+				else if($("#q"+currentNumber+"answer2").is(":checked"))return 2;
+				else if($("#q"+currentNumber+"answer3").is(":checked"))return 3;
+				else if($("#q"+currentNumber+"answer4").is(":checked"))return 4;
 			}
-			
 		</script>
 	</body>
 </html>
