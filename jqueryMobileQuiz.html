@@ -40,13 +40,13 @@
 		</div>
 		
 		<script>
+		
+		var answerArray = [];
 			$(document).ready(function() {
-			
-				var answerArray = [];
 				
 				$("#start").click(function() {
 					var slider = parseInt($("#slider").val())
-					var str = "";
+					var pageContent = "";
 					
 					if(!selectedDifficultyCheck()){
 						alert("You have not selected difficulty");
@@ -55,7 +55,7 @@
 					
 					for(var i = 1; i <= slider; i++){
 
-							str = str +
+							pageContent = pageContent +
 							'<div data-role = "page" id = "page'+i+'">' +
 								'<div data-role = "header"> <h1>Question #'+i+'</h1> </div>' +
 								'<div role = "main" class = "ui-content">'+ 
@@ -78,12 +78,24 @@
 									
 									'</form>' +
 									
-									'<a class="ui-btn ui-shadow ui-corner-all" onClick="nextQuestionPage('+i+','+slider+')">Next Question</a>' +
-								'</div>'+
+									'<fieldset class = "ui-grid-a">'+
+										'<div class = "ui-block-a">'+
+											'<a class = "ui-btn ui-corner-all ui-shadow ui-btn-a" onClick="previousQuestionPage('+i+')">Previous Question</a>'+
+										'</div>'+
+         
+										
+										'<div class = "ui-block-b">'
+										if(i == slider)
+											pageContent = pageContent + '<a class = "ui-btn ui-corner-all ui-shadow ui-btn-b"  id="continueButton'+i+'" onClick="nextQuestionPage('+i+','+slider+')">Get results</a>';
+										else
+											pageContent = pageContent + '<a class = "ui-btn ui-corner-all ui-shadow ui-btn-b" id="continueButton'+i+'" onClick="nextQuestionPage('+i+','+slider+')">Next Question</a>';;
+										pageContent = pageContent +	'</div>' +
+									'</fieldset>'
+								pageContent = pageContent +'</div>'+
 							'<div data-role = "footer"> <h4>'+i+'/'+slider+'</h4></div>'+
 							'</div>';
 							
-						$("body").html(str);
+						$("body").html(pageContent);
 					}
 					$.mobile.navigate("#page1");
 					
@@ -105,29 +117,8 @@
 					}
 				}
 				
-				
 			});
 			
-			function nextQuestionPage(currentNumber,lastNumber){
-				
-				var selectedAnswer = false;
-				while(!selectedAnswer){
-					if(!isNaN(getAnswersFromQuestion(currentNumber))){
-						selectedAnswer = true;
-						if(currentNumber == lastNumber){
-							alert(getAnswersFromQuestion(currentNumber))
-							alert("slut")
-						}
-						else{
-							$.mobile.navigate("#page" + (currentNumber + 1).toString());
-						}	
-					}
-					else if(isNaN(getAnswersFromQuestion(currentNumber))){
-						alert("You have not selected anything");
-						break;
-					}
-				}
-			}
 			
 			function getAnswersFromQuestion(currentNumber){
 				if ($("#q"+currentNumber+"answer1").is(":checked")) return 1;
@@ -135,6 +126,45 @@
 				else if($("#q"+currentNumber+"answer3").is(":checked"))return 3;
 				else if($("#q"+currentNumber+"answer4").is(":checked"))return 4;
 			}
+				
+			function allAnswersChecked(amountOfQuestions){
+				for(var i = 1; i <= amountOfQuestions; i++){
+					if(isNaN(getAnswersFromQuestion(i))) answerArray.push("Not Answered");
+					else answerArray.push(getAnswersFromQuestion(i).toString());
+				}
+			}
+			
+			function nextQuestionPage(currentNumber,lastNumber){
+				if(currentNumber == lastNumber){	
+					allAnswersChecked(lastNumber)
+					generateRightAnswerPage()
+				}
+				else{
+					$.mobile.navigate("#page" + (currentNumber + 1).toString());
+				}	
+			}
+			
+			function previousQuestionPage(currentNumber){
+				if(currentNumber == 1){
+					return
+				}
+				else $.mobile.navigate("#page" + (currentNumber - 1).toString());
+			}
+			
+			function generateRightAnswerPage(){
+				var answerPageContent = "";
+				
+				answerPageContent += 
+					'<div data-role = "page" id = "answerPage">'+
+						'<div data-role = "header"> <h1>Results / Answers</h1> </div>' +
+						'<div role = "main" class = "ui-content">'+
+						'</div>'+
+						'<div data-role = "footer"> <h4>Result</h4></div>'+
+					'</div>';
+				$("body").html(answerPageContent);
+				$.mobile.navigate("#answerPage");
+			}
+			
 		</script>
 	</body>
 </html>
