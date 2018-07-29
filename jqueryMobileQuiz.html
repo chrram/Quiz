@@ -6,7 +6,34 @@
 		<script src = "https://code.jquery.com/jquery-1.11.3.min.js"></script>
 		<script src = "https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
 		<style>
-		
+			h3{
+				text-align:center;
+			}
+			<!-- .ui-body-a, -->
+			<!-- .ui-page-theme-a.ui-body-inherit, -->
+			<!-- html.ui-bar-a.ui-body-inherit, -->
+			<!-- html.ui-body-a.ui-body-inherit, -->
+			<!-- html body.ui-group-theme-a.ui-body-inherit, -->
+			<!-- html.ui-panel-page-container-a{ -->
+				<!-- color:green; -->
+			<!-- } -->
+			li{
+				<!-- text-align:center !important; -->
+			}
+			
+			li.wrong{
+				background: #ff416c; /* fallback for old browsers */
+				background: -webkit-linear-gradient(to top, #ff416c, #ff4b2b); /* Chrome 10-25, Safari 5.1-6 */
+				background: linear-gradient(to top, #ff416c, #ff4b2b);
+				color:white !important;
+			}
+			
+			li.right{
+				background: #11998e;  /* fallback for old browsers */
+				background: -webkit-linear-gradient(to top, #38ef7d, #11998e);  /* Chrome 10-25, Safari 5.1-6 */
+				background: linear-gradient(to top, #38ef7d, #11998e); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+				color: white !important;
+			}
 		</style>
 	</head>
 	<body>
@@ -55,7 +82,7 @@
 					
 					for(var i = 1; i <= slider; i++){
 
-							pageContent = pageContent +
+							pageContent += 
 							'<div data-role = "page" id = "page'+i+'">' +
 								'<div data-role = "header"> <h1>Question #'+i+'</h1> </div>' +
 								'<div role = "main" class = "ui-content">'+ 
@@ -86,12 +113,12 @@
 										
 										'<div class = "ui-block-b">'
 										if(i == slider)
-											pageContent = pageContent + '<a class = "ui-btn ui-corner-all ui-shadow ui-btn-b"  id="continueButton'+i+'" onClick="nextQuestionPage('+i+','+slider+')">Get results</a>';
+											pageContent += '<a class = "ui-btn ui-corner-all ui-shadow ui-btn-b"  id="continueButton'+i+'" onClick="nextQuestionPage('+i+','+slider+')">Get results</a>';
 										else
-											pageContent = pageContent + '<a class = "ui-btn ui-corner-all ui-shadow ui-btn-b" id="continueButton'+i+'" onClick="nextQuestionPage('+i+','+slider+')">Next Question</a>';;
-										pageContent = pageContent +	'</div>' +
+											pageContent += '<a class = "ui-btn ui-corner-all ui-shadow ui-btn-b" id="continueButton'+i+'" onClick="nextQuestionPage('+i+','+slider+')">Next Question</a>';;
+										pageContent +=	'</div>' +
 									'</fieldset>'
-								pageContent = pageContent +'</div>'+
+								pageContent +='</div>'+
 							'<div data-role = "footer"> <h4>'+i+'/'+slider+'</h4></div>'+
 							'</div>';
 							
@@ -137,7 +164,7 @@
 			function nextQuestionPage(currentNumber,lastNumber){
 				if(currentNumber == lastNumber){	
 					allAnswersChecked(lastNumber)
-					generateRightAnswerPage()
+					generateRightAnswerPage(lastNumber)
 				}
 				else{
 					$.mobile.navigate("#page" + (currentNumber + 1).toString());
@@ -151,15 +178,33 @@
 				else $.mobile.navigate("#page" + (currentNumber - 1).toString());
 			}
 			
-			function generateRightAnswerPage(){
+			function generateRightAnswerPage(amountOfQuestions){
 				var answerPageContent = "";
 				
 				answerPageContent += 
 					'<div data-role = "page" id = "answerPage">'+
 						'<div data-role = "header"> <h1>Results / Answers</h1> </div>' +
 						'<div role = "main" class = "ui-content">'+
-						'</div>'+
-						'<div data-role = "footer"> <h4>Result</h4></div>'+
+						
+						'<h3>Your score : 2/4</h3>'+
+						'<br />'
+						
+						for(var question = 1; question <= amountOfQuestions; question++){
+							answerPageContent +=
+							'<div data-role = "collapsible">' +
+								'<h2>Question '+question+'</h2>' +
+								'<ul data-role="listview">'+
+									'<li class="wrong  ui-icon-home ui-btn-icon-left">Answer 1</li>' +
+									'<li class="wrong">Answer 2</li>' +
+									'<li class="wrong">Answer 3</li>' +
+									'<li class="right">Answer 4</li>' +
+								'</ul>'+
+							'</div>' 
+						}
+						<!-- '<h3>Your answers</h3> <br />'+ -->
+						
+						answerPageContent += '</div>'+
+						'<div data-role = "footer"> <h1>Your score: 50%</h1> </div>'+
 					'</div>';
 				$("body").html(answerPageContent);
 				$.mobile.navigate("#answerPage");
