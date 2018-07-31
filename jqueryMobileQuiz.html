@@ -21,6 +21,10 @@
 				<!-- text-align:center !important; -->
 			}
 			
+			h4{
+				text-align:center;
+			}
+			
 			li.wrong{
 				background: #ff416c; /* fallback for old browsers */
 				background: -webkit-linear-gradient(to top, #ff416c, #ff4b2b); /* Chrome 10-25, Safari 5.1-6 */
@@ -68,9 +72,50 @@
 		
 		<script>
 		
-		var answerArray = [];
+		function shuffle(arr) {
+			var i,
+				j,
+				temp;
+			for (i = arr.length - 1; i > 0; i--) {
+				j = Math.floor(Math.random() * (i + 1));
+				temp = arr[i];
+				arr[i] = arr[j];
+				arr[j] = temp;
+			}
+			return arr;    
+		};
+
+		
+		function Question (question, wrongAnswers, rightAnswer) {
+			this.question = question;
+			this.wrongAnswers = wrongAnswers;
+			this.rightAnswer = rightAnswer;
+			this.answers = [];
+			this.answers.push(this.wrongAnswers[0], this.wrongAnswers[1], this.wrongAnswers[2])
+			this.answers.push(this.rightAnswer)
+			<!-- alert(this.answers) -->
+			shuffle(this.answers)
+			<!-- alert(this.answers) -->
+			
+			this.getQuestion = function() {
+				return this.question;
+			}
+			this.getCorrectAnswer = function() {
+				return this.rightAnswer;
+			}
+			
+			this.getTheAnswers = function(){
+				return this.answers;
+			}
+		}
+		
+			var answerArray = [];
+			var questionObjectArray = [];
+		
 			$(document).ready(function() {
-				
+			
+			
+			
 				$("#start").click(function() {
 					var slider = parseInt($("#slider").val())
 					var pageContent = "";
@@ -80,12 +125,40 @@
 						return;
 					}
 					
+					fetch('https://opentdb.com/api.php?amount='+slider+'&category=23&difficulty='+getDifficulty()+'&type=multiple').then(response => {
+						return response.json();
+					}).then(data => {
+					console.log(data)
+						for(var i=0; i <= slider -1; i++){
+							questionObjectArray[i] = 
+							new Question(
+								data.results[i].question,
+								data.results[i].incorrect_answers,
+								data.results[i].correct_answer
+							);
+							
+							<!-- alert(questionObjectArray[i].getQuestion()) -->
+							$("h4#question"+(i+1)+"").html(questionObjectArray[i].getQuestion())
+							$("label[for='q"+(i+1)+"answer1']").html(questionObjectArray[i].getTheAnswers()[0]);
+							$("label[for='q"+(i+1)+"answer2']").html(questionObjectArray[i].getTheAnswers()[1]);
+							$("label[for='q"+(i+1)+"answer3']").html(questionObjectArray[i].getTheAnswers()[2]);
+							$("label[for='q"+(i+1)+"answer4']").html(questionObjectArray[i].getTheAnswers()[3]);
+						}
+						
+						
+						
+					}).catch(err => {
+						alert("Error getting API data.")
+					});
+			
 					for(var i = 1; i <= slider; i++){
 
 							pageContent += 
 							'<div data-role = "page" id = "page'+i+'">' +
-								'<div data-role = "header"> <h1>Question #'+i+'</h1> </div>' +
+								'<div data-role = "header"><h1>Question #'+i+'</h1> </div>' +
 								'<div role = "main" class = "ui-content">'+ 
+								
+									'<h4 id="question'+i+'">  </h4>' +
 								
 									'<form>' +
 								
@@ -148,16 +221,19 @@
 			
 			
 			function getAnswersFromQuestion(currentNumber){
-				if ($("#q"+currentNumber+"answer1").is(":checked")) return 1;
-				else if($("#q"+currentNumber+"answer2").is(":checked"))return 2;
-				else if($("#q"+currentNumber+"answer3").is(":checked"))return 3;
-				else if($("#q"+currentNumber+"answer4").is(":checked"))return 4;
+				if ($("#q"+currentNumber+"answer1").is(":checked")) return $("label[for='q"+(currentNumber)+"answer1']").html();
+				else if($("#q"+currentNumber+"answer2").is(":checked"))return $("label[for='q"+(currentNumber)+"answer2']").html();
+				else if($("#q"+currentNumber+"answer3").is(":checked"))return $("label[for='q"+(currentNumber)+"answer3']").html();
+				else if($("#q"+currentNumber+"answer4").is(":checked"))return $("label[for='q"+(currentNumber)+"answer4']").html();
 			}
 				
 			function allAnswersChecked(amountOfQuestions){
 				for(var i = 1; i <= amountOfQuestions; i++){
-					if(isNaN(getAnswersFromQuestion(i))) answerArray.push("Not Answered");
-					else answerArray.push(getAnswersFromQuestion(i).toString());
+					if(typeof(getAnswersFromQuestion(i)) != "string") answerArray.push("Not Answered");
+					else{ 
+					<!-- alert($("label[for='q"+(i)+"answer1']").html()) -->
+					<!-- alert(answerArray.push(getAnswersFromQuestion(i).toString())) -->
+					answerArray.push(getAnswersFromQuestion(i).toString());}
 				}
 			}
 			
@@ -181,6 +257,10 @@
 			function generateRightAnswerPage(amountOfQuestions){
 				var answerPageContent = "";
 				
+				
+				alert(answerArray[0]);
+				<!-- alert(questionObjectArray[0].getQuestion()) -->
+				
 				answerPageContent += 
 					'<div data-role = "page" id = "answerPage">'+
 						'<div data-role = "header"> <h1>Results / Answers</h1> </div>' +
@@ -192,12 +272,12 @@
 						for(var question = 1; question <= amountOfQuestions; question++){
 							answerPageContent +=
 							'<div data-role = "collapsible">' +
-								'<h2>Question '+question+'</h2>' +
+								'<h2>Question '+question+':'+questionObjectArray[question-1].getQuestion()+'</h2>' +
 								'<ul data-role="listview">'+
-									'<li class="wrong  ui-icon-home ui-btn-icon-left">Answer 1</li>' +
-									'<li class="wrong">Answer 2</li>' +
-									'<li class="wrong">Answer 3</li>' +
-									'<li class="right">Answer 4</li>' +
+									'<li class="wrong" ui-icon-home ui-btn-icon-left">'+questionObjectArray[question-1].getTheAnswers()[0]+'</li>' +
+									'<li class="">'+questionObjectArray[question-1].getTheAnswers()[1]+'</li>' +
+									'<li class="">'+questionObjectArray[question-1].getTheAnswers()[2]+'</li>' +
+									'<li class="right">'+questionObjectArray[question-1].getTheAnswers()[3]+'</li>' +
 								'</ul>'+
 							'</div>' 
 						}
@@ -209,6 +289,8 @@
 				$("body").html(answerPageContent);
 				$.mobile.navigate("#answerPage");
 			}
+			
+			
 			
 		</script>
 	</body>
