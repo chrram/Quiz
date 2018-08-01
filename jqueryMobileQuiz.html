@@ -254,12 +254,13 @@
 				else $.mobile.navigate("#page" + (currentNumber - 1).toString());
 			}
 			
+			function calculateRightScore(){
+				
+			}
+			
 			function generateRightAnswerPage(amountOfQuestions){
 				var answerPageContent = "";
-				
-				
-				alert(answerArray[0]);
-				<!-- alert(questionObjectArray[0].getQuestion()) -->
+				calculateRightScore()
 				
 				answerPageContent += 
 					'<div data-role = "page" id = "answerPage">'+
@@ -274,11 +275,12 @@
 							'<div data-role = "collapsible">' +
 								'<h2>Question '+question+':'+questionObjectArray[question-1].getQuestion()+'</h2>' +
 								'<ul data-role="listview">'+
-									'<li class="wrong" ui-icon-home ui-btn-icon-left">'+questionObjectArray[question-1].getTheAnswers()[0]+'</li>' +
-									'<li class="">'+questionObjectArray[question-1].getTheAnswers()[1]+'</li>' +
-									'<li class="">'+questionObjectArray[question-1].getTheAnswers()[2]+'</li>' +
-									'<li class="right">'+questionObjectArray[question-1].getTheAnswers()[3]+'</li>' +
-								'</ul>'+
+									'<li class="answerList">'+questionObjectArray[question-1].getTheAnswers()[0]+'</li>' +
+									'<li class="answerList">'+questionObjectArray[question-1].getTheAnswers()[1]+'</li>' +
+									'<li class="answerList">'+questionObjectArray[question-1].getTheAnswers()[2]+'</li>' +
+									'<li class="answerList">'+questionObjectArray[question-1].getTheAnswers()[3]+'</li>'
+									
+								answerPageContent += '</ul>'+
 							'</div>' 
 						}
 						<!-- '<h3>Your answers</h3> <br />'+ -->
@@ -287,6 +289,21 @@
 						'<div data-role = "footer"> <h1>Your score: 50%</h1> </div>'+
 					'</div>';
 				$("body").html(answerPageContent);
+				
+				for(var question = 1; question <= amountOfQuestions; question++){
+					if(answerArray[question-1] == "Not Answered"){
+						$('.answerList:contains("'+(questionObjectArray[question-1].getCorrectAnswer()).toString()+'")').addClass("right")
+					}
+					else if(questionObjectArray[question-1].getCorrectAnswer() == answerArray[question-1]){
+						$('.answerList:contains("'+(questionObjectArray[question-1].getCorrectAnswer()).toString()+'")').addClass("right")
+					}
+					else{
+						$('.answerList:contains("'+answerArray[question-1]+'")').addClass("wrong")
+						$('.answerList:contains("'+(questionObjectArray[question-1].getCorrectAnswer()).toString()+'")').addClass("right")
+						alert("wrong")
+					}
+				}
+				
 				$.mobile.navigate("#answerPage");
 			}
 			
