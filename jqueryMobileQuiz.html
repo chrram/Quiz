@@ -260,21 +260,21 @@
 			
 			function generateRightAnswerPage(amountOfQuestions){
 				var answerPageContent = "";
-				calculateRightScore()
+				var amountRightAnswers = 0;
 				
 				answerPageContent += 
 					'<div data-role = "page" id = "answerPage">'+
 						'<div data-role = "header"> <h1>Results / Answers</h1> </div>' +
 						'<div role = "main" class = "ui-content">'+
 						
-						'<h3>Your score : 2/4</h3>'+
+						'<h3>Your score :</h3>'+
 						'<br />'
 						
 						for(var question = 1; question <= amountOfQuestions; question++){
 							answerPageContent +=
 							'<div data-role = "collapsible">' +
 								'<h2>Question '+question+':'+questionObjectArray[question-1].getQuestion()+'</h2>' +
-								'<ul data-role="listview">'+
+								'<ul data-role="listview" id="ul'+question+'">'+
 									'<li class="answerList">'+questionObjectArray[question-1].getTheAnswers()[0]+'</li>' +
 									'<li class="answerList">'+questionObjectArray[question-1].getTheAnswers()[1]+'</li>' +
 									'<li class="answerList">'+questionObjectArray[question-1].getTheAnswers()[2]+'</li>' +
@@ -291,18 +291,37 @@
 				$("body").html(answerPageContent);
 				
 				for(var question = 1; question <= amountOfQuestions; question++){
+					//Not answered
 					if(answerArray[question-1] == "Not Answered"){
-						$('.answerList:contains("'+(questionObjectArray[question-1].getCorrectAnswer()).toString()+'")').addClass("right")
+						
+						$("ul#ul"+question+" li.answerList").filter(function() {
+							return $(this).text() === ""+questionObjectArray[question-1].getCorrectAnswer().toString()+"";
+						}).addClass("right");
+						
 					}
+					// right answer
 					else if(questionObjectArray[question-1].getCorrectAnswer() == answerArray[question-1]){
-						$('.answerList:contains("'+(questionObjectArray[question-1].getCorrectAnswer()).toString()+'")').addClass("right")
+						$("ul#ul"+question+" li.answerList").filter(function() {
+							return $(this).text() === ""+questionObjectArray[question-1].getCorrectAnswer().toString()+"";
+						}).addClass("right");
+						amountRightAnswers++
 					}
+					//wrong answer
 					else{
-						$('.answerList:contains("'+answerArray[question-1]+'")').addClass("wrong")
-						$('.answerList:contains("'+(questionObjectArray[question-1].getCorrectAnswer()).toString()+'")').addClass("right")
-						alert("wrong")
+						$("ul#ul"+question+" li.answerList").filter(function() {
+							return $(this).text() === ""+answerArray[question-1]+"";
+						}).addClass("wrong");
+						$("ul#ul"+question+" li.answerList").filter(function() {
+							return $(this).text() === ""+questionObjectArray[question-1].getCorrectAnswer().toString()+"";
+						}).addClass("right");
 					}
 				}
+				
+				$("h3").filter(function() {
+							return $(this).text() === "Your score :";
+				}).html("Your score: "+amountRightAnswers+"/"+amountOfQuestions+"");
+				
+				$("div[data-role='footer'] h1").html("Your score: "+((100*amountRightAnswers)/amountOfQuestions).toFixed(0)+"%");
 				
 				$.mobile.navigate("#answerPage");
 			}
