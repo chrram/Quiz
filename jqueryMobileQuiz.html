@@ -38,6 +38,19 @@
 				background: linear-gradient(to top, #38ef7d, #11998e); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 				color: white !important;
 			}
+			
+			[data-role="header"]{
+				background-color:#0071bc !important;
+				color:white !important;
+				text-shadow:0 1px 0 black !important;
+			}
+			
+			[data-role="footer"]{
+				background-color:#0071bc !important;
+				color:white !important;
+				text-shadow:0 1px 0 black !important;
+			}
+			
 		</style>
 	</head>
 	<body>
@@ -68,14 +81,11 @@
 			<div data-role = "footer" class = "ui-content">
 				
 			</div>
-		</div>
-		
+		</div>	
 		<script>
 		
 		function shuffle(arr) {
-			var i,
-				j,
-				temp;
+			var i,j,temp;
 			for (i = arr.length - 1; i > 0; i--) {
 				j = Math.floor(Math.random() * (i + 1));
 				temp = arr[i];
@@ -93,9 +103,7 @@
 			this.answers = [];
 			this.answers.push(this.wrongAnswers[0], this.wrongAnswers[1], this.wrongAnswers[2])
 			this.answers.push(this.rightAnswer)
-			<!-- alert(this.answers) -->
 			shuffle(this.answers)
-			<!-- alert(this.answers) -->
 			
 			this.getQuestion = function() {
 				return this.question;
@@ -283,10 +291,12 @@
 								answerPageContent += '</ul>'+
 							'</div>' 
 						}
-						<!-- '<h3>Your answers</h3> <br />'+ -->
+						
 						
 						answerPageContent += '</div>'+
+						'<button onClick="location.reload();">Start new game</button>'+
 						'<div data-role = "footer"> <h1>Your score: 50%</h1> </div>'+
+						
 					'</div>';
 				$("body").html(answerPageContent);
 				
@@ -322,6 +332,7 @@
 				}).html("Your score: "+amountRightAnswers+"/"+amountOfQuestions+"");
 				
 				$("div[data-role='footer'] h1").html("Your score: "+((100*amountRightAnswers)/amountOfQuestions).toFixed(0)+"%");
+				
 				
 				$.mobile.navigate("#answerPage");
 			}
