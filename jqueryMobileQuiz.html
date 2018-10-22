@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="sv">
    <head>
+		<meta charset="UTF-16">
 		<meta name = "viewport" content = "width = device-width, initial-scale = 1">
 		<link rel = "stylesheet" href = "https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
 		<script src = "https://code.jquery.com/jquery-1.11.3.min.js"></script>
@@ -9,33 +10,19 @@
 			h3{
 				text-align:center;
 			}
-			<!-- .ui-body-a, -->
-			<!-- .ui-page-theme-a.ui-body-inherit, -->
-			<!-- html.ui-bar-a.ui-body-inherit, -->
-			<!-- html.ui-body-a.ui-body-inherit, -->
-			<!-- html body.ui-group-theme-a.ui-body-inherit, -->
-			<!-- html.ui-panel-page-container-a{ -->
-				<!-- color:green; -->
-			<!-- } -->
-			li{
-				<!-- text-align:center !important; -->
-			}
 			
 			h4{
 				text-align:center;
 			}
 			
 			li.wrong{
-				background: #ff416c; /* fallback for old browsers */
-				background: -webkit-linear-gradient(to top, #ff416c, #ff4b2b); /* Chrome 10-25, Safari 5.1-6 */
-				background: linear-gradient(to top, #ff416c, #ff4b2b);
+			
+				background-color:#e74c3c !important;
 				color:white !important;
 			}
 			
 			li.right{
-				background: #11998e;  /* fallback for old browsers */
-				background: -webkit-linear-gradient(to top, #38ef7d, #11998e);  /* Chrome 10-25, Safari 5.1-6 */
-				background: linear-gradient(to top, #38ef7d, #11998e); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+				background-color:#27ae60 !important;
 				color: white !important;
 			}
 			
@@ -56,25 +43,24 @@
 	<body>
 		<div data-role = "page" id = "index">
 			<div data-role = "header">
-				<h1>Welcome to the history quiz!</h1>
+				<h1>Welcome to the quiz!</h1>
 			</div>
 			<div data-role = "main" class = "ui-content">
 				<form>
+					<fieldset data-role = "controlgroup">
+						<legend>Choose difficulty</legend>
+						<input type = "radio" id = "radio1" name = "radio-choice-0" />
+						<label for = "radio1">Easy</label>
 
-				<fieldset data-role = "controlgroup">
-					<input type = "radio" id = "radio1" name = "radio-choice-0" />
-					<label for = "radio1">Easy</label>
+						<input type = "radio" id = "radio2" name = "radio-choice-0" />
+						<label for = "radio2">Medium</label>
 
-					<input type = "radio" id = "radio2" name = "radio-choice-0" />
-					<label for = "radio2">Medium</label>
-
-					<input type = "radio" id = "radio3" name = "radio-choice-0" />
-					<label for = "radio3">Hard</label>
-				</fieldset>
+						<input type = "radio" id = "radio3" name = "radio-choice-0" />
+						<label for = "radio3">Hard</label>
+					</fieldset>
 				
 					<label for = "slider">Amount of questions</label>
-					<input type = "range" name = "slider" id = "slider" value = "20" min = "1" max = "50" data-highlight = "true">
-							
+					<input type = "range" name = "slider" id = "slider" value = "20" min = "1" max = "50" data-highlight = "true">	
 				</form>
 				<a class="ui-btn ui-shadow ui-corner-all" id="start" data-transition = "pop">Start!</a>
 			</div>
@@ -84,81 +70,80 @@
 		</div>	
 		<script>
 		
-		function shuffle(arr) {
-			var i,j,temp;
-			for (i = arr.length - 1; i > 0; i--) {
-				j = Math.floor(Math.random() * (i + 1));
-				temp = arr[i];
-				arr[i] = arr[j];
-				arr[j] = temp;
-			}
-			return arr;    
-		};
-
-		
-		function Question (question, wrongAnswers, rightAnswer) {
-			this.question = question;
-			this.wrongAnswers = wrongAnswers;
-			this.rightAnswer = rightAnswer;
-			this.answers = [];
-			this.answers.push(this.wrongAnswers[0], this.wrongAnswers[1], this.wrongAnswers[2])
-			this.answers.push(this.rightAnswer)
-			shuffle(this.answers)
-			
-			this.getQuestion = function() {
-				return this.question;
-			}
-			this.getCorrectAnswer = function() {
-				return this.rightAnswer;
+			// Purpose: Shuffle the array containing the questions.
+			function shuffle(array) {
+				var i,j,temp;
+				for (i = array.length - 1; i > 0; i--) {
+					j = Math.floor(Math.random() * (i + 1));
+					temp = array[i];
+					array[i] = array[j];
+					array[j] = temp;
+				}
+				return array;
 			}
 			
-			this.getTheAnswers = function(){
-				return this.answers;
+			// Purpose: Class containing the logic for the question, the right answer and the wrong answers.
+			function Question (question, wrongAnswers, rightAnswer) {
+				this.question = question;
+				this.wrongAnswers = wrongAnswers;
+				this.rightAnswer = $("<div/>").html(rightAnswer).text()
+				this.answers = [];
+				this.answers.push($("<div/>").html(this.wrongAnswers[0]).text(), $("<div/>").html(this.wrongAnswers[1]).text(), $("<div/>").html(this.wrongAnswers[2]).text())
+				this.answers.push($("<div/>").html(this.rightAnswer).text())
+				shuffle(this.answers)
+				
+				this.getQuestion = function() {
+					return this.question;
+				}
+				this.getCorrectAnswer = function() {
+					return this.rightAnswer;
+				}
+				
+				this.getTheAnswers = function() {
+					return this.answers;
+				}
 			}
-		}
 		
 			var answerArray = [];
 			var questionObjectArray = [];
 		
 			$(document).ready(function() {
 			
-			
-			
+				// When you click on the start button on the first page.
 				$("#start").click(function() {
 					var slider = parseInt($("#slider").val())
 					var pageContent = "";
 					
+					// Checks if you have selected a difficulty in order to start.
 					if(!selectedDifficultyCheck()){
 						alert("You have not selected difficulty");
 						return;
 					}
 					
-					fetch('https://opentdb.com/api.php?amount='+slider+'&category=23&difficulty='+getDifficulty()+'&type=multiple').then(response => {
+					// Fetches data from the API based on the amount of desired questions and difficulty setting.
+					fetch('https://opentdb.com/api.php?amount='+slider+'&difficulty='+getDifficulty()+'&type=multiple').then(response => {
 						return response.json();
 					}).then(data => {
-					console.log(data)
-						for(var i=0; i <= slider -1; i++){
+						// Fills the array with question data and then fills up the different pages with this data.
+						for(var i=0; i <= slider -1; i++){	
 							questionObjectArray[i] = 
 							new Question(
-								data.results[i].question,
-								data.results[i].incorrect_answers,
-								data.results[i].correct_answer
+								(data.results[i].question),
+								(data.results[i].incorrect_answers),
+								(data.results[i].correct_answer)
 							);
 							
-							<!-- alert(questionObjectArray[i].getQuestion()) -->
 							$("h4#question"+(i+1)+"").html(questionObjectArray[i].getQuestion())
 							$("label[for='q"+(i+1)+"answer1']").html(questionObjectArray[i].getTheAnswers()[0]);
 							$("label[for='q"+(i+1)+"answer2']").html(questionObjectArray[i].getTheAnswers()[1]);
 							$("label[for='q"+(i+1)+"answer3']").html(questionObjectArray[i].getTheAnswers()[2]);
 							$("label[for='q"+(i+1)+"answer4']").html(questionObjectArray[i].getTheAnswers()[3]);
 						}
-						
-						
-						
 					}).catch(err => {
 						alert("Error getting API data.")
 					});
-			
+					
+					// Creates the pages that are going to display the question data.
 					for(var i = 1; i <= slider; i++){
 
 							pageContent += 
@@ -191,30 +176,32 @@
 											'<a class = "ui-btn ui-corner-all ui-shadow ui-btn-a" onClick="previousQuestionPage('+i+')">Previous Question</a>'+
 										'</div>'+
          
-										
 										'<div class = "ui-block-b">'
+										// If you have reached the last question page it will display "Get Result", if not it will continue displaying "Next Question".
 										if(i == slider)
 											pageContent += '<a class = "ui-btn ui-corner-all ui-shadow ui-btn-b"  id="continueButton'+i+'" onClick="nextQuestionPage('+i+','+slider+')">Get results</a>';
 										else
-											pageContent += '<a class = "ui-btn ui-corner-all ui-shadow ui-btn-b" id="continueButton'+i+'" onClick="nextQuestionPage('+i+','+slider+')">Next Question</a>';;
-										pageContent +=	'</div>' +
+											pageContent += '<a class = "ui-btn ui-corner-all ui-shadow ui-btn-b" id="continueButton'+i+'" onClick="nextQuestionPage('+i+','+slider+')">Next Question</a>';
+										pageContent += '</div>' +
 									'</fieldset>'
 								pageContent +='</div>'+
 							'<div data-role = "footer"> <h4>'+i+'/'+slider+'</h4></div>'+
 							'</div>';
-							
+						
+						// Populates the HTML body with a new page for each question.
 						$("body").html(pageContent);
 					}
 					$.mobile.navigate("#page1");
-					
 				});
 				
+				// Purpose: Returns the desired game difficulty.
 				function getDifficulty(){
 					if ($("#radio1").is(":checked")) return "easy";
 					else if($("#radio2").is(":checked"))return "medium";
 					else if($("#radio3").is(":checked"))return "hard";
 				}
 				
+				// Purpose: Check if a difficulty is set.
 				function selectedDifficultyCheck(){
 					if((typeof getDifficulty()) == "string"){
 						return true;
@@ -227,24 +214,25 @@
 				
 			});
 			
+			// Purpose: To check whether the question is answered or not, and then put this information in the answerArray.
+			function allAnswersChecked(amountOfQuestions){
+				for(var i = 1; i <= amountOfQuestions; i++){
+					if(typeof(getUserAnswerFromQuestion(i)) != "string") answerArray.push("Not Answered");
+					else{ 
+						answerArray.push(getUserAnswerFromQuestion(i).toString());
+					}
+				}
+			}
 			
-			function getAnswersFromQuestion(currentNumber){
+			// Purpose: To retrieve the answer from the user to the current question.
+			function getUserAnswerFromQuestion(currentNumber){
 				if ($("#q"+currentNumber+"answer1").is(":checked")) return $("label[for='q"+(currentNumber)+"answer1']").html();
 				else if($("#q"+currentNumber+"answer2").is(":checked"))return $("label[for='q"+(currentNumber)+"answer2']").html();
 				else if($("#q"+currentNumber+"answer3").is(":checked"))return $("label[for='q"+(currentNumber)+"answer3']").html();
 				else if($("#q"+currentNumber+"answer4").is(":checked"))return $("label[for='q"+(currentNumber)+"answer4']").html();
 			}
-				
-			function allAnswersChecked(amountOfQuestions){
-				for(var i = 1; i <= amountOfQuestions; i++){
-					if(typeof(getAnswersFromQuestion(i)) != "string") answerArray.push("Not Answered");
-					else{ 
-					<!-- alert($("label[for='q"+(i)+"answer1']").html()) -->
-					<!-- alert(answerArray.push(getAnswersFromQuestion(i).toString())) -->
-					answerArray.push(getAnswersFromQuestion(i).toString());}
-				}
-			}
 			
+			// Purpose: To navigate to the next page or generate the last page that displays the user score and the right answers to the questions.
 			function nextQuestionPage(currentNumber,lastNumber){
 				if(currentNumber == lastNumber){	
 					allAnswersChecked(lastNumber)
@@ -255,6 +243,7 @@
 				}	
 			}
 			
+			// Purpose: To navigate to the previous question page. Not possible if you are on the  first question page.
 			function previousQuestionPage(currentNumber){
 				if(currentNumber == 1){
 					return
@@ -262,10 +251,7 @@
 				else $.mobile.navigate("#page" + (currentNumber - 1).toString());
 			}
 			
-			function calculateRightScore(){
-				
-			}
-			
+			// Purpose: Generate the page that displays the score and the right answers to the questions.
 			function generateRightAnswerPage(amountOfQuestions){
 				var answerPageContent = "";
 				var amountRightAnswers = 0;
@@ -278,6 +264,7 @@
 						'<h3>Your score :</h3>'+
 						'<br />'
 						
+						// Populates a collapsible list with the question and it answers.
 						for(var question = 1; question <= amountOfQuestions; question++){
 							answerPageContent +=
 							'<div data-role = "collapsible">' +
@@ -295,50 +282,47 @@
 						
 						answerPageContent += '</div>'+
 						'<button onClick="location.reload();">Start new game</button>'+
-						'<div data-role = "footer"> <h1>Your score: 50%</h1> </div>'+
+						'<div data-role = "footer"> <h1>Your score:</h1> </div>'+
 						
 					'</div>';
 				$("body").html(answerPageContent);
 				
+				// Logic for handling if the question was answered or not answered, and if they were correctly answered or not.
 				for(var question = 1; question <= amountOfQuestions; question++){
-					//Not answered
+					// Not answered.
 					if(answerArray[question-1] == "Not Answered"){
-						
 						$("ul#ul"+question+" li.answerList").filter(function() {
 							return $(this).text() === ""+questionObjectArray[question-1].getCorrectAnswer().toString()+"";
 						}).addClass("right");
 						
 					}
-					// right answer
+					// Correct answer.
 					else if(questionObjectArray[question-1].getCorrectAnswer() == answerArray[question-1]){
 						$("ul#ul"+question+" li.answerList").filter(function() {
 							return $(this).text() === ""+questionObjectArray[question-1].getCorrectAnswer().toString()+"";
-						}).addClass("right");
+						}).addClass("right ui-btn ui-shadow ui-corner-all ui-btn-icon-right ui-icon-check");
 						amountRightAnswers++
 					}
-					//wrong answer
+					// Wrong answer.
 					else{
 						$("ul#ul"+question+" li.answerList").filter(function() {
 							return $(this).text() === ""+answerArray[question-1]+"";
-						}).addClass("wrong");
+						}).addClass("wrong ui-btn ui-shadow ui-corner-all ui-btn-icon-right ui-icon-check");
 						$("ul#ul"+question+" li.answerList").filter(function() {
 							return $(this).text() === ""+questionObjectArray[question-1].getCorrectAnswer().toString()+"";
 						}).addClass("right");
 					}
 				}
 				
+				// Calulates the scores and displays it.
 				$("h3").filter(function() {
 							return $(this).text() === "Your score :";
 				}).html("Your score: "+amountRightAnswers+"/"+amountOfQuestions+"");
-				
 				$("div[data-role='footer'] h1").html("Your score: "+((100*amountRightAnswers)/amountOfQuestions).toFixed(0)+"%");
 				
 				
 				$.mobile.navigate("#answerPage");
 			}
-			
-			
-			
 		</script>
 	</body>
 </html>
